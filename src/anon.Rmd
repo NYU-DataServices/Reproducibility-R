@@ -1,0 +1,77 @@
+---
+title: "Anonymizing Data"
+author: "Vicky Steeves"
+date: "October 11, 2017"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document: default
+---
+
+This tutorial will go over how to anonmyize data with R, then share a reproducible package. I adapted this tutorial from Jan Gorecki's [blog post](https://gitlab.com/jangorecki/jangorecki.gitlab.io/blob/master/_posts/2014-11-07-Data-Anonymization-in-R.md).
+
+First, we need to load in the three depedencies:
+
+```{r}
+library(data.table)
+library(digest)
+library(knitr)
+```
+
+Then we need to read the data and we'll display it in our Notebook nicely using kable().
+
+```{r}
+SURV<-read.csv(file=file.path("../data/2017-10-11_Dataset.csv"), header=TRUE)
+kable(head(SURV))
+```
+
+Next, we'll use a function called `anonymizeCRC` to apply a unique hash to each value in a given column, using the crc32 algorithm. You can read more about [digest()](https://cran.r-project.org/web/packages/digest/digest.pdf).
+
+```{r}
+anonymizeCRC <- function(x, algo="crc32"){
+  unq_hashes <- vapply(unique(x), function(object) digest(object, algo=algo), FUN.VALUE="", USE.NAMES=TRUE)
+  unname(unq_hashes[x])
+}
+```
+
+Pick columns
+
+```{r}
+# choose columns to mask
+cols_to_mask <- c("NAME","ADDRESS","POSTAL.CODE")
+
+# backup original data
+SURV_ORG <- copy(SURV)
+
+# anonymize
+SURV[cols_to_mask] <- lapply(SURV[cols_to_mask], anonymizeCRC)
+
+# pretty print
+kable(head(SURV))
+```
+
+We can use other hashing algorithms, though! We'll use a function called `anonymizeMD` to apply a unique hash to each value in a given column, using the md5 algorithm.
+
+
+```{r}
+anonymizeMD <- function(x, algo="md5"){
+  unq_hashes <- vapply(unique(x), function(object) digest(object, algo=algo), FUN.VALUE="", USE.NAMES=TRUE)
+  unname(unq_hashes[x])
+}
+```
+
+We will pick the columns we want to anonmyize -- in this case, NAME, POSTAL.CODE, and ADDRESS, and put feed them into anonymizeMD. I also want to backup the original table just in case I mess up!
+
+```{r}
+# choose columns to mask
+cols_to_mask <- c("NAME","ADDRESS","POSTAL.CODE")
+
+# backup original data
+SURV_ORG <- copy(SURV)
+
+# anonymize
+SURV[cols_to_mask] <- lapply(SURV[cols_to_mask], anonymizeMD)
+
+# pretty print
+kable(head(SURV))
+```

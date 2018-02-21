@@ -1,0 +1,57 @@
+---
+title: "Anonymizing Data - Birthdays"
+author: "Vicky Steeves"
+date: "October 11, 2017"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+This tutorial will go over how to anonmyize data with R, then share a reproducible package. I adapted this tutorial from Jan Gorecki's [blog post](https://gitlab.com/jangorecki/jangorecki.gitlab.io/blob/master/_posts/2014-11-07-Data-Anonymization-in-R.md).
+
+First, we need to load in the three depedencies:
+
+```{r}
+library(data.table)
+library(digest)
+library(knitr)
+library(date)
+```
+
+Then we need to read the data. However! You'll notice by running `class(SURVEY$BDAY)` on the console that the column BDAY is classified as a factor -- we need it as a date. So, we'll quickly convert that.
+
+```{r}
+# read in the CSV, put it in a dataframe called SURVEY
+SURVEY<-read.csv("../data/2017-10-11_Data-Bday.csv", header=TRUE)
+
+# format BDAY column to a date
+SURVEY$BDAY = as.Date(SURVEY$BDAY, format = "%Y-%m-%d")
+
+# pretty print
+kable(head(SURVEY))
+```
+
+Next, we'll use a function called `anonymizeCRC` to apply a unique hash to each value in a given column, using the crc32 algorithm. You can read more about [digest()](https://cran.r-project.org/web/packages/digest/digest.pdf).
+
+```{r}
+anonymizeCRC <- function(x, algo="crc32"){
+  unq_hashes <- vapply(unique(x), function(object) digest(object, algo=algo), FUN.VALUE="", USE.NAMES=TRUE)
+  unname(unq_hashes[x])
+}
+```
+
+We will pick the columns we want to anonmyize -- in this case, NAME and ADDRESS, and put feed them into anonymizeCRC. We will also have to anonymize date of birth, found in the BDAY column. Since this isn't the most sensitive dataset, I'll just remove the birthDAY and leave the birthYEAR and birthMONTH. 
+
+```{r}
+# choose columns to mask
+cols_to_mask <- c("NAME","ADDRESS")
+
+# anonymize name and address
+SURVEY[cols_to_mask] <- lapply(SURVEY[cols_to_mask], anonymizeCRC)
+
+# sort of anonymize DOB
+SURVEY$BDAY <- format(SURVEY$BDAY, format = "%Y-%m")
+
+# pretty print
+kable(head(SURVEY))
+```

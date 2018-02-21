@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Reproducibility & R</title>
+
+		<link rel="stylesheet" href="reveal/css/reveal.css">
+		<link rel="stylesheet" href="reveal/css/theme/simple.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="reveal/lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal/css/print/pdf.css' : 'reveal/css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+
+			<!-- INTRO SLIDE -->
+			<section>
+			  <h2>Reproducible Workflows with R</h2><br/>
+			   
+  			   <p>Vicky Steeves and Nicholas Wolf | DATE</p>
+
+			   <p>Get this presentation: </p>
+			 	
+			   <img src="doc/slide-imgs/dataservices.png" width="30%" height="30%" align="middle"><br/>
+			
+			   <div class='footer'>
+			   <hr/>
+			   <p>Vicky's ORCID: <a href="http://orcid.org/0000-0003-4298-168X/">0000-0003-4298-168X</a> | Nick's ORCID: <a href="http://orcid.org/0000-0001-5512-6151">0000-0001-5512-6151</a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p></div>		
+		        </section>
+
+			<!-- SLIDE 1 -->
+			<section>
+			  <h2>Intro to Reproducibility</h2>
+			</section>
+
+			<!-- SLIDE 2 -->
+			<section>
+			  <h2>Obligatory (but relevant) PhD comic strip...</h2>
+			  <img src="doc/slide-imgs/phd-comics.png">
+			</section>
+
+			<!-- SLIDE 3 -->
+			<section>
+			  <h2>Why Reproducibility?</h2>
+			  <div align="right" style="color: #ff5252;">
+			     <p>"If I have seen further, it is by standing on the shoulders of giants." - Sir Isaac Newton</p>
+ 			  </div>
+			  <div align="left" style="text-align: left;">
+			     <p>To build on top of previous work – science is incremental!</p>
+			     <p>To verify the correctness of results</p>
+			     <p>To defeat self-deception<sup>1</sup></p>
+			     <p>To help newcomers</p>
+			     <p>To increase impact, visibility<sup>2</sup> and research quality<sup>3</sup></p></div>
+    			  <div class='footer' style='font-size:normal;'>
+			  <hr/>
+			  <ol>
+			    <li>http://www.nature.com/news/how-scientists-fool-themselves-and-how-they-can-stop-1.18517</li>
+			    <li>http://infoscience.epfl.ch/record/136640/files/VandewalleKV09.pdf</li>
+			    <li>http://www.nature.com/nature/journal/v483/n7391/full/483531a.html</li>
+			   </ol>
+			  </div>
+			</section>
+
+			<!-- SLIDE 4 -->
+			<section>
+			  <h2>Why Reproducibility? <span style="color:;">Think Selflessly</span></h2>
+			   <p>Others can re-use and extend your work more easily!</p>
+			     <ul><li>You can even find interesting collaborations and future research projects out of this.</li></ul>
+			   
+			   <p>YOU can re-use and extend your work more easily! (sort of selfless...)</p>
+			     <ul><li>Future you is your greatest collaborator.</li></ul>
+			   
+                           <p>Newbies to the field can more easily learn the methods by reproducing your work!</p>
+			     <ul><li>Your reproducible work is their greatest teacher.</li></ul>
+			</section>
+
+			<!-- SLIDE 5 -->
+			<section>
+			  <h2>Reproducibility vs Replicaiton</h2>
+			   <p>Reproducibility</p>
+			   <p>Independently confirm results with the same data and code</p>
+
+			   <p>Replication</p>
+			   <p>Independently confirm results with new data and code</p>
+			</section>
+
+			<!-- SLIDE 6 -->
+			<section>
+			  <h2>Reproducibility on a spectrum</h2>
+			   <div style="float:left; width:55%;">
+			    <p><span style="color:#4ba173;">Reviewable Research</span>: Sufficient detail for peer review &amp; assessment.</p>
+        			<p><span style="color:#4ba173;">Replicable Research</span>: Tools are available to duplicate the author’s results using their data.<p>
+        			<p><span style="color:#4ba173;">Confirmable Research</span>: Main conclusions can be attained independently without author’s software. </p>
+       				<p><span style="color:#4ba173;">Auditable Research</span>: Process &amp; tools archived such that it can be defended later if necessary. </p>
+        			<p><strong><span style="color:#4ba173;">Open/Reproducible Research</span>: Auditable research made openly available.</strong></p>
+
+    <p><a href="http://stodden.net/icerm_report.pdf">Stodden et al ICERM report (2013)</a></p>
+			</div>
+			<div style="float:right; width:45%;">
+			  <img src="doc/slide-imgs/repro-pyramid.png" align="middle">
+			</div>			  
+
+			</section>
+
+			<!-- SLIDE 7 -->
+			<section>
+ 			 <h2>Even if runnable, results may differ</h2>
+			   <p><a href="http://dx.doi.org/10.1371/journal.pone.0038234">The Effects of FreeSurfer Version, Workstation Type, and Macintosh Operating System Version on Anatomical Volume and Cortical Thickness Measurements</a> | June 1, 2012</p>
+			   <p><span style="color:#999999;">We investigated the effects of data processing variables such as FreeSurfer version (v4.3.1, v4.5.0, and v5.0.0), workstation (Macintosh and Hewlett-Packard), and Macintosh operating system version (OSX 10.5 and OSX 10.6).</span><strong> Significant differences</strong><span style="color:#999999;"> were revealed between</span> <strong>FreeSurfer version v5.0.0 and the two earlier versions</strong><span style="color:#999999;">. [...] About a factor two smaller differences were detected between</span> <strong>Macintosh and Hewlett-Packard workstations</strong> <span style="color:#999999;">and between</span> <strong>OSX 10.5 and OSX 10.6</strong><span style="color:#999999;">.</span></p>
+			</section>
+
+			<!-- SLIDE 8 -->
+			<section>
+ 			 <h2>Challenges in Reproducibility</h2>
+			 
+			</section>
+
+			<!-- SLIDE 9 -->
+			<section>
+ 			 <h2>So, what do we need?</h2>
+			 
+			</section>
+
+			<!-- SLIDE 10 -->
+			<section>
+ 			 <h2>Working Reproducibly with R</h2>
+			</section>
+
+			<!-- SLIDE 11 -->
+			<section>
+ 			 <h2>Prerequisites</h2>
+			   <p>Please make sure you have the following installed:</p>
+			   <ul>
+			     <li>R & RStudio</li>
+			     <li><a href="https://rmarkdown.rstudio.com/index.html">R Markdown</a> -- <code>install.packages("rmarkdown")</code></li>
+			     <li><a href="https://yihui.name/knitr/">knitr</a> -- <code>install.packages("knitr")</code></li>
+			     <li><a href="https://rstudio.github.io/packrat/">packrat</a> -- <code>install.packages("packrat")</code></li>
+			   </ul>
+			   <p><strong>Let’s take 5 minutes to make sure everyone has these things installed.</strong></p>
+			</section>
+
+			<!-- SLIDE 12 -->
+			<section>
+ 			 <h2>You can't have any sort of reproducibility without good data and project management.</h2>
+			</section>
+			
+	
+			<!-- CONCLUSION SLIDE -->
+			<section>
+			</section>
+				
+	          </div>
+		</div>
+
+		<script src="reveal/lib/js/head.min.js"></script>
+		<script src="reveal/js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+							// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'reveal/plugin/markdown/marked.js' },
+					{ src: 'reveal/plugin/markdown/markdown.js' },
+					{ src: 'reveal/plugin/notes/notes.js', async: true },
+					{ src: 'reveal/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
